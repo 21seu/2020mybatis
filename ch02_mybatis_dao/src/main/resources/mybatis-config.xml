@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--配置日志-->
+    <settings>
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
+    <!--环境配置：数据库的连接信息
+        default：必须和某个environments的id值一样。
+        告诉mybatis使用哪个数据库的连接信息。也就是访问哪个数据库-->
+    <environments default="development">
+        <!--environment：一个数据库信息的配置，环境
+            id：一个胃一直，自定义的，表示环境的名称-->
+        <environment id="development">
+            <!--mybatis的事务类型
+                type：JDBC（表示使用Jdbc中的Connection对象的commit，rollback做事务处理）-->
+            <transactionManager type="JDBC"/>
+            <!--datatSource表示数据域，连接数据库的
+                type：表示数据源的类型，POOLED表示使用连接池-->
+            <dataSource type="POOLED">
+                <!--name里的命名都是固定的，不能自定义-->
+                <!--数据库驱动类名-->
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <!--连接数据库的url字符串-->
+                <property name="url" value="jdbc:mysql:///mybatis?serverTimezone=UTC&amp;characterEncoding=utf8"/>
+                <!--访问数据库的用户名称-->
+                <property name="username" value="root"/>
+                <!--访问数据库的密码-->
+                <property name="password" value="password"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper resource="mapper/SongMapper.xml"/>
+    </mappers>
+</configuration>

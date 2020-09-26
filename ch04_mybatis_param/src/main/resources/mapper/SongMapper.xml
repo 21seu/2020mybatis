@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.SongDao">
+    <!--
+    parameterType:dao方法参数的数据类型
+    parameterType它的值是Java数据类型的全限定名称或者是mybatis定义的别名
+
+    parameterType不是强制的，mybatis通过反射机制能够发现接口参数的数据类型
+
+
+    使用#{}之后，mybatis执行sql是使用的jdbc中的PreparedStatement对象
+    由mybatis执行下面的代码:
+    1、mybatis创建Connection，PreparedStatement对象
+    select * from mybatis_song where id = ?
+    PreparedStatement pstmt = conn.preparedStatement(sql);
+    pstmt.setInt(1,1001);
+
+    2、执行sql封装为resultType="pojo.Song"这个对象
+    ResultSet rs = pstmt.executeQuery();
+    while(rs.next()){
+    //从数据库取表的数据，存到java对象属性中
+    new Song(...)
+    }
+    return ...
+    -->
+    <select id="selectSongById" parameterType="integer" resultType="pojo.Song">
+        select * from mybatis_song where id = ${id}
+    </select>
+
+    <select id="selectMultiParam" resultType="pojo.Song">
+        select * from mybatis_song where singer = #{singer} and language = #{language}
+    </select>
+
+    <select id="selectMultiObject" resultType="pojo.Song">
+        select * from mybatis_song where singer = #{singer} and language = #{language}
+    </select>
+
+    <!--按位置传值-->
+    <select id="selectMultiPosition" resultType="pojo.Song">
+        select * from mybatis_song where singer = #{arg0} and language = #{arg1}
+    </select>
+
+    <!--MAP传参-->
+    <select id="selectMultiMap" resultType="pojo.Song">
+        select * from mybatis_song where singer = #{singer} and language = #{language}
+    </select>
+
+    <!--$替换列名-->
+    <select id="selectUse$Order" resultType="pojo.Song">
+         select * from mybatis_song order by ${singer}
+    </select>
+
+    <!--多个参数，使用java对象的属性值，作为参数实际类型
+        使用对象语法#{属性名,javaType=类型名称,jdbcType=数据类型}
+        javaType：值java中的属性数据类型
+        jdbcType:在数据库中的数据类型
+
+
+        我们使用简化的方式：#{属性名}  javaType，jdbcType的值mybatis反射能获取。不用提供
+    -->
+</mapper>

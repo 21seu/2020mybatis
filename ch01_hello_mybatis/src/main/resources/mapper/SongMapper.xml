@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.SongDao">
+    <select id="queryAllSongInfos" resultType="pojo.Song">
+        <!--
+        id：你要执行的sql语法的唯一表示，mybatis会使用这个id的值来找到要执行的sql语句
+            可以自定义，但是要求你使用接口中的方法名称
+
+        resultType：表示结果类型，是sql语句执行后的到ResultSet，遍历这个ResultSet得到java对象的类型
+            值写的是类型的全限定名称
+        -->
+        select * from mybatis_song
+    </select>
+
+    <insert id="insertSong">
+        insert into mybatis_song values(null,#{name,jdbcType=VARCHAR},#{singer,jdbcType=VARCHAR},
+        #{category,jdbcType=VARCHAR},#{writer,jdbcType=VARCHAR},#{language,jdbcType=VARCHAR},
+        #{issudate,jdbcType=TIMESTAMP})
+    </insert>
+</mapper>
+        <!--
+            sql映射文件：写sql语句，mybatis会执行这些sql
+            1、指定约束文件
+            <!DOCTYPE mapper
+                PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+             mybatis-3-mapper.dtd是约束文件的名称，扩展名是dtd的
+
+            2、约束文件作用：限制，检查当前文件中出现的标签，属性必须符合mybatis的要求
+
+            3、mapper  是当前稳健的根标签，必须的
+               namespace：叫做命名空间空间，唯一值的，可以是自定义的字符串
+                          要求：使用dao接口的全限定名称
+            4、在当前文件中，可以使用特定的标签，表示数据库的特定操作。
+                <select>：查询
+                <update>：表示更新数据库操作
+                <insert>：标书插入数据
+                <delete>：表示删除数据
+        -->
