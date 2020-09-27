@@ -704,3 +704,82 @@ public interface SongDao {
   ```
 
   
+
+#### 5.代码片段
+
+* 步骤
+  1. 先定义<sql id="自定义名称唯一"> sql语句，表名，字段等</sql>
+  2. 在使用，<include refid="id的值"/>
+
+```xml
+<!--sql代码片段-->
+    <sql id="sql1">
+        select * from mybatis_song where id in
+    </sql>
+
+	<select id="selectForEachOne" resultType="Song">
+        <!--select * from mybatis_song where id in-->
+        <!--使用sql代码片段-->
+        <include refid="sql1"/>
+        	<foreach collection="list" item="myId" open="(" close=")" separator=",">
+            	#{myId,jdbcType=INTEGER}
+        	</foreach>
+    </select>
+```
+
+
+
+#### 6.扩展trim标签
+
+* mybatis的**trim**标签一般用于去除sql语句中多余的and关键字，逗号，或者给sql语句前拼接 “where“、“set“以及“values(“ 等前缀，或者添加“)“等后缀，可用于选择性插入、更新、删除或者条件查询等操作
+
+* 属性
+
+  |    **属性**     |                           **描述**                           |
+  | :-------------: | :----------------------------------------------------------: |
+  |     prefix      |                     给sql语句拼接的前缀                      |
+  |     suffix      |                     给sql语句拼接的后缀                      |
+  | prefixOverrides | 去除sql语句前面的关键字或者字符，该关键字或者字符由prefixOverrides属性指定，假设该属性指定为"AND"，当sql语句的开头为"AND"，trim标签将会去除该"AND" |
+  | suffixOverrides | 去除sql语句后面的关键字或者字符，该关键字或者字符由suffixOverrides属性指定 |
+
+* 使用trim标签去掉多余的and
+
+  ```xml
+  <trim prefix="WHERE" prefixOverrides="AND">
+  	<if test="state != null">
+  	  state = #{state}
+  	</if> 
+  	<if test="title != null">
+  	  AND title like #{title}
+  	</if>
+  	<if test="author != null and author.name != null">
+  	  AND author_name like #{author.name}
+  	</if>
+  </trim>
+  
+  ```
+
+* 使用trim标签去掉多余的逗号
+
+  ```xml
+  <insert id="...">
+  <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="roleName != null">
+      role_name,
+      </if>
+      <if test="note != null">
+      note
+      </if>
+  </trim>
+  <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="roleName != null">
+      #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null">
+      #{note,jdbcType=VARCHAR}
+      </if>
+  </trim>
+  </insert>
+  ```
+
+  

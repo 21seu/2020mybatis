@@ -3,6 +3,10 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="dao.SongDao">
+    <!--sql代码片段-->
+    <sql id="sql1">
+        select * from mybatis_song where id in
+    </sql>
     <!--if 动态sql-->
     <select id="selectSongsIf" resultType="Song">
         select * from mybatis_song
@@ -19,7 +23,8 @@
 
     <!--foreach用法1-->
     <select id="selectForEachOne" resultType="Song">
-        select * from mybatis_song where id in
+        <!--select * from mybatis_song where id in-->
+        <include refid="sql1"/>
         <!--
         collection：表示接口中方法参数的类型，如果是数组使用array，如果是list集合使用list
         item：自定义的，表示数组和集合成员的变量
