@@ -334,7 +334,10 @@ SqlSession session = sqlSessionFactory.openSession();
 * SqlSession接口实现类DefaultSqlSession
 * 使用要求：SqlSession对象不是线程安全的，需要在方法的内部使用，在执行sql语句之前，使用openSession()获取SqlSession对象，在执行完sql语句后，需要关闭它，执行SqlSession的close()，这样能保证它的使用是线程安全的。
 
+
+
 ## 第三章
+
 #### 1.动态代理：使用sqlSession.getMapper(dao接口.class) 获取这个dao接口的对象
 
 
@@ -557,3 +560,147 @@ List<Song> selectUse$Order(@Param("singer") String singer);
         concat(concat('%',#{name}),'%')
 </select>
 ```
+
+
+
+## 第四章
+
+#### 1.动态sql
+
+* sql的内容是可以变化的，可以根据条件获取到不同的sql语句。
+* 主要是where的部分发生变化
+* 动态sql的实现，使用的是Mybatis提供的标签：<if>,<where>,<foreach>
+
+#### 2.if标签
+* <if>是片段条件的，语法：
+```xml
+<if test="判断java对象的属性值">
+部分sql语句
+</if>
+```
+* 示例
+```java
+public interface SongDao {
+
+    /**
+     * 动态sql要使用Java对象作为参数
+     * @param song
+     * @return
+     */
+    public List<Song> selectSongsIf(Song song);
+}
+```
+```xml
+<!--if 动态sql-->
+    <select id="selectSongsIf" resultType="Song">
+        select * from mybatis_song
+        where 1 = 1  <!--这里1=1这样做是因为如果第一个条件不成立，但是第二个条件成立时，那么sql就会变成
+        select * from mybatis_song where and language = ? 语法错误  或者简单粗暴直接使用<where></where>
+        -->
+        <if test="singer != null and singer != ''">
+            singer = #{singer,jdbcType=VARCHAR}
+        </if>
+        <if test="language != null and language != ''">
+            and language = #{language,jdbcType=VARCHAR}
+        </if>
+    </select>
+```
+
+
+
+#### 3.where标签
+
+* 用来包含多个<if>，当if有一个成立，where标签会自动增加一个where关键字，并去掉if中多余的and，or等
+
+```xml
+<select id="selectSongsIf" resultType="Song">
+        select * from mybatis_song
+        <where>
+        <if test="singer != null and singer != ''">
+            singer = #{singer,jdbcType=VARCHAR}
+        </if>
+        <if test="language != null and language != ''">
+            and language = #{language,jdbcType=VARCHAR}
+        </if>
+        </where>
+    </select>
+```
+
+
+
+#### 4.foreach标签
+
+* 循环java中的数据，list集合。主要用在sql的in语句中
+
+* 手工拼接sql的方式
+
+  ```java
+  @Test
+      public void testfor() {
+          List<Integer> list = new ArrayList<Integer>();
+          list.add(1);
+          list.add(2);
+          list.add(3);
+  
+          String sql = "select * from mybatis_song where id in";
+  
+          StringBuilder sb = new StringBuilder("");
+          int init = 0;
+          int len = list.size();
+          //添加开始的(
+          sb.append("(");
+          for (Integer i : list) {
+              sb.append(i).append(",");
+          }
+          sb.deleteCharAt(sb.length() - 1);
+          //循环的结尾增加)
+          sb.append(")");
+          sql += sb.toString();
+          System.out.println("sql==>" + sql);
+      }
+  ```
+
+* 使用foreach标签1：传递的参数是基本的数据类型
+
+  ```java
+  //forEach用法1
+      List<Song> selectForEachOne(List<Integer> id);
+  ```
+
+  ```xml
+  <!--foreach用法1-->
+      <select id="selectForEachOne" resultType="Song">
+          select * from mybatis_song where id in
+          <!--
+          collection：表示接口中方法参数的类型，如果是数组使用array，如果是list集合使用list
+          item：自定义的，表示数组和集合成员的变量
+          open：循环开始时的字符
+          close：循环结束时的字符
+          separator：集合成员之间的分隔符
+          -->
+          <foreach collection="list" item="myId" open="(" close=")" separator=",">
+              #{myId,jdbcType=INTEGER}
+          </foreach>
+      </select>
+  ```
+
+  
+
+* 使用foreach标签1：传递的参数失对象
+
+  ```java
+  //forEach用法2
+      List<Song> selectForEachTwo(List<Song> songs);
+  ```
+
+  ```xml
+  <!--foreach用法2-->
+      <select id="selectForEachTwo" resultType="Song">
+          select * from mybatis_song where id in
+          <foreach collection="list" item="song" open="(" close=")" separator=",">
+              #{song.id,jdbcType=INTEGER}
+          </foreach>
+      </select>
+  ```
+
+  

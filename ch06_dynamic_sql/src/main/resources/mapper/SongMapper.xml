@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.SongDao">
+    <!--if 动态sql-->
+    <select id="selectSongsIf" resultType="Song">
+        select * from mybatis_song
+        where 1 = 1  <!--这里1=1这样做是因为如果第一个条件不成立，但是第二个条件成立时，那么sql就会变成
+        select * from mybatis_song where and language = ? 语法错误  或者简单粗暴直接使用<where></where>
+        -->
+        <if test="singer != null and singer != ''">
+            singer = #{singer,jdbcType=VARCHAR}
+        </if>
+        <if test="language != null and language != ''">
+            and language = #{language,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <!--foreach用法1-->
+    <select id="selectForEachOne" resultType="Song">
+        select * from mybatis_song where id in
+        <!--
+        collection：表示接口中方法参数的类型，如果是数组使用array，如果是list集合使用list
+        item：自定义的，表示数组和集合成员的变量
+        open：循环开始时的字符
+        close：循环结束时的字符
+        separator：集合成员之间的分隔符
+        -->
+        <foreach collection="list" item="myId" open="(" close=")" separator=",">
+            #{myId,jdbcType=INTEGER}
+        </foreach>
+    </select>
+
+    <!--foreach用法2-->
+    <select id="selectForEachTwo" resultType="Song">
+        select * from mybatis_song where id in
+        <foreach collection="list" item="song" open="(" close=")" separator=",">
+            #{song.id,jdbcType=INTEGER}
+        </foreach>
+    </select>
+</mapper>

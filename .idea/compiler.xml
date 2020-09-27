@@ -7,11 +7,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="ch02_mybatis_dao" />
-        <module name="ch03_proxy_dao" />
         <module name="ch01_hello_mybatis" />
         <module name="ch05_return_result" />
         <module name="ch04_mybatis_param" />
+        <module name="ch02_mybatis_dao" />
+        <module name="ch06_dynamic_sql" />
+        <module name="ch03_proxy_dao" />
       </profile>
     </annotationProcessing>
   </component>
