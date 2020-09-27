@@ -13,6 +13,7 @@
         <module>ch02_mybatis_dao</module>
         <module>ch03_proxy_dao</module>
         <module>ch04_mybatis_param</module>
+        <module>ch05_return_result</module>
     </modules>
 
     <dependencies>

@@ -10,6 +10,7 @@
         <module name="ch02_mybatis_dao" />
         <module name="ch03_proxy_dao" />
         <module name="ch01_hello_mybatis" />
+        <module name="ch05_return_result" />
         <module name="ch04_mybatis_param" />
       </profile>
     </annotationProcessing>

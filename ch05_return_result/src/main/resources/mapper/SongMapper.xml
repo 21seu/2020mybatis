@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.SongDao">
+    <select id="selectSongsByInfos" resultType="SongDto">
+        select * from mybatis_song where singer = #{singer} or language = #{language}
+    </select>
+
+    <!--返回Map
+    1、列名是map的Key，列值是map的value
+    2、如果要返回多行记录，则需要再封装到List集合里边
+    -->
+    <select id="selectMapById" resultType="map">
+        select * from mybatis_song where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <!--
+    使用resultMap：
+    先定义resultMap
+    在select标签中，使用resultMap来引用1定义的
+    -->
+    <!--定义resultMap：
+    id：自定义名称，表示你定义的这个resultMap
+    type：java类型的全限定名称
+    -->
+    <resultMap id="songMap" type="pojo.Song">
+        <!--列名和java属性的关系-->
+        <!--主键列使用id标签
+        column：列名
+        property：java类型的属性名
+
+        非主键列：使用result标签
+        -->
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="category" property="category"/>
+    </resultMap>
+    <select id="selectAllSongs" resultMap="songMap">
+        select id,name,category from mybatis_song
+    </select>
+
+
+    <!--列名和属性名不一样：第一种方式-->
+    <resultMap id="songMap2" type="pojo.MySong">
+        <id column="id" property="songID"/>
+        <result column="name" property="songName"/>
+        <result column="singer" property="songSinger"/>
+    </resultMap>
+    <select id="selectAllSong" resultMap="songMap2">
+        select id,name,singer from mybatis_song
+    </select>
+
+    <!--列名和属性名不一样：第二种方式
+    resultType的默认原则：用吗的列值赋值给同名的属性，使用列别名
+    -->
+    <select id="selectDiffColProperty" resultType="pojo.MySong">
+        select id as songId,name as songName,singer as songSinger from mybatis_song
+    </select>
+
+    <!--第一种like-->
+    <select id="selectLikeOne" resultType="Song">
+        select * from mybatis_song where name like #{name,jdbcType=VARCHAR}
+    </select>
+
+    <!--第二种like-->
+   <!-- <select id="selectLikeTwo" resultType="Song">
+        select * from mybatis_song where name like "%" #{name,jdbcType=VARCHAR} "%"
+    </select>-->
+    <select id="selectLikeTwo" resultType="Song">
+        select * from mybatis_song where name like <!--concat('%',#{name,jdbcType=VARCHAR},'%')-->
+        concat(concat('%',#{name}),'%')
+    </select>
+</mapper>

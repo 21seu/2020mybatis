@@ -494,7 +494,66 @@ List<Song> selectUse$Order(@Param("singer") String singer);
 #和$区别：
 
 * #使用？在sql语句中做占位，使用PreparedStatement执行SQL，效率高
+
 * #能够避免sql注入，更安全
+
 * $不使用占位符，是字符串连接的方式，使用Statement对象执行SQL，效率低
+
 * $有sql注入的风险，缺乏安全性
+
 * $在替换列名或表名时使用
+
+  
+
+#### 4.封装Mybatis输出结果
+1.resultType结果类型，指sql语句执行完毕后，数据转为的java对象
+
+  resultType结果类型的它值1、类型的全限定名称 2、类型的别名，例如java.lang.Integer别名为Int
+
+处理方式：
+* mybatis执行sql语句，然后mybatis调用类的无参构造方法，创建对象
+* mybatis把result指定列值赋给同名的属性
+
+2.定义自定义类型的别名（最好使用全限定名称，如果定义了不同包，同名类的别名就会出现问题）
+* 在Mybatis主配置文件中定义，使用<typeAlias>定义别名
+* 可以在resultType中使用
+```xml
+<typeAliases>
+        <!--可以指定一个类型一个自定义的别名
+        type：自定义类型的全限定名称
+        alias：别名（短小，容易记忆的）
+        -->
+        <typeAlias type="pojo.Song" alias="Song"/>
+        <typeAlias type="dto.SongDto" alias="SongDto"/>
+    <!--第二种方式
+        <package> name是包名，这个包中的所有类，类名就是别名（类名不区分大小写）
+        -->
+    	<package name="pojo"/>
+    </typeAliases>
+```
+
+3.resultMap：结果映射，指定列名和java对象的属性对应关系
+* 自定义列值赋值给哪个属性
+* 当列名和属性名不一样时，使用resultMap
+* resultMap和resultType不要一起用，二选一
+
+4.like模糊查询
+* 方式一：直接传%参数%
+```xml
+<select id="selectLikeOne" resultType="Song">
+        select * from mybatis_song where name like #{name,jdbcType=VARCHAR}
+</select>
+```
+* 方式二：mapper.xml文件中拼接
+```xml
+<select id="selectLikeTwo" resultType="Song">
+        select * from mybatis_song where name like "%" #{name,jdbcType=VARCHAR} "%"
+</select>
+```
+* 方式三：concat拼接
+```xml
+<select id="selectLikeTwo" resultType="Song">
+        select * from mybatis_song where name like <!--concat('%',#{name,jdbcType=VARCHAR},'%')-->
+        concat(concat('%',#{name}),'%')
+</select>
+```
