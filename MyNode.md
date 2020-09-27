@@ -660,7 +660,7 @@ public interface SongDao {
       }
   ```
 
-* 使用foreach标签1：传递的参数是基本的数据类型
+* 使用foreach标签1：传递的参数是基本数据类型
 
   ```java
   //forEach用法1
@@ -686,7 +686,7 @@ public interface SongDao {
 
   
 
-* 使用foreach标签1：传递的参数失对象
+* 使用foreach标签1：传递的参数是对象
 
   ```java
   //forEach用法2
