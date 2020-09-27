@@ -44,4 +44,10 @@
             #{song.id,jdbcType=INTEGER}
         </foreach>
     </select>
+
+
+    <!--使用分页插件-->
+    <select id="selectAll" resultType="Song">
+        select * from mybatis_song
+    </select>
 </mapper>

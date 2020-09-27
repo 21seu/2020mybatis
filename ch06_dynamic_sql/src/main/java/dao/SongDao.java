@@ -22,4 +22,7 @@ public interface SongDao {
 
     //forEach用法2
     List<Song> selectForEachTwo(List<Song> songs);
+
+    //使用分页插件
+    List<Song> selectAll();
 }

@@ -1,5 +1,6 @@
 package dao;
 
+import com.github.pagehelper.PageHelper;
 import org.apache.ibatis.session.SqlSession;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,6 +79,25 @@ public class SongDaoTest {
         SqlSession sqlSession = MybatisUtil.getSqlSession();
         SongDao mapper = sqlSession.getMapper(SongDao.class);
         List<Song> songs = mapper.selectForEachTwo(list);
+        for (Song song : songs) {
+            System.out.println(song);
+        }
+        sqlSession.close();
+    }
+
+    @Test
+    public void selectAll() {
+        List<Song> list = new ArrayList<Song>();
+        list.add(new Song(1,"彩虹"));
+        list.add(new Song(2,"曾静的你"));
+        SqlSession sqlSession = MybatisUtil.getSqlSession();
+        SongDao mapper = sqlSession.getMapper(SongDao.class);
+        //加入PageHelper的方法，分页
+        //pageNum：第几页，从1开始
+        //pageSize：一页中有多少行数据
+        //PageHelper.startPage(1,3);
+        PageHelper.offsetPage(1,3);
+        List<Song> songs = mapper.selectAll();
         for (Song song : songs) {
             System.out.println(song);
         }

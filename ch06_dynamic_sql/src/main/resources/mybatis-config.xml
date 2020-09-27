@@ -3,6 +3,8 @@
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+    <!--指定properties文件的位置，从类路径根开始找文件-->
+    <properties resource="db.properties"/>
     <!--配置日志-->
     <settings>
         <setting name="logImpl" value="STDOUT_LOGGING"/>
@@ -20,6 +22,13 @@
         <typeAlias type="pojo.Song" alias="Song"/>
         <!--<package name="pojo"/>-->
     </typeAliases>
+
+    <!--分页插件-->
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor"/>
+    </plugins>
+
+
     <!--环境配置：数据库的连接信息
         default：必须和某个environments的id值一样。
         告诉mybatis使用哪个数据库的连接信息。也就是访问哪个数据库-->
@@ -35,17 +44,25 @@
             <dataSource type="POOLED">
                 <!--name里的命名都是固定的，不能自定义-->
                 <!--数据库驱动类名-->
-                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="driver" value="${jdbc.mysql.driver}"/>
                 <!--连接数据库的url字符串-->
-                <property name="url" value="jdbc:mysql:///mybatis?serverTimezone=UTC&amp;characterEncoding=utf8"/>
+                <property name="url" value="${jdbc.mysql.url}"/>
                 <!--访问数据库的用户名称-->
-                <property name="username" value="root"/>
+                <property name="username" value="${jdbc.mysql.username}"/>
                 <!--访问数据库的密码-->
-                <property name="password" value="password"/>
+                <property name="password" value="${jdbc.mysql.password}"/>
             </dataSource>
         </environment>
     </environments>
     <mappers>
+        <!--第一种方式，指定多个mapper文件-->
         <mapper resource="mapper/SongMapper.xml"/>
+        <!--第二种方式，使用包名   xml文件所在的包名 这个包中所有xml文件一次都能加再给mybatis
+            使用package要求：
+            1、mapper文件名称需要和接口名称一样，区分大小写一样
+            2、mapper文件和dao接口需要在统一目录
+        -->
+        <!--<package name="mapper"/>-->
+
     </mappers>
 </configuration>

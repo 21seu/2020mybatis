@@ -783,3 +783,126 @@ public interface SongDao {
   ```
 
   
+
+## 第五章
+
+######20200928
+
+#### 1.数据库的属性配置文件
+
+把数据库连接信息放到一个单独的文件中。和mybatis配置文件分开。目的：便于修改，保存，处理多个数据库的信息
+
+使用：
+
+1. 在resources目录中定义一个属性配置文件，XXX.properties；在属性配置文件中，定义数据，格式：key=value；key一般做多级目录，如：jdbc.mysql.driver
+
+   ```properties
+   jdbc.mysql.driver=com.mysql.cj.jdbc.Driver
+   jdbc.mysql.url=jdbc:mysql:///mybatis?serverTimezone=UTC&characterEncoding=utf8
+   jdbc.mysql.username=root
+   jdbc.mysql.password=password
+   ```
+
+   
+
+2. 在mybatis的主配置文件中，使用properties标签指定文件的位置，在需要使用的地方 ${key}
+
+   ```xml
+   <!--指定properties文件的位置，从类路径根开始找文件-->
+       <properties resource="db.properties"/>
+   
+   <dataSource type="POOLED">
+                   <!--name里的命名都是固定的，不能自定义-->
+                   <!--数据库驱动类名-->
+                   <property name="driver" value="${jdbc.mysql.driver}"/>
+                   <!--连接数据库的url字符串-->
+                   <property name="url" value="${jdbc.mysql.url}"/>
+                   <!--访问数据库的用户名称-->
+                   <property name="username" value="${jdbc.mysql.username}"/>
+                   <!--访问数据库的密码-->
+                   <property name="password" value="${jdbc.mysql.password}"/>
+               </dataSource>
+   ```
+
+   
+
+#### 2.指定多个mapper文件的方式
+
+1. 指定多个mapper文件 resource属性
+2. 使用包名 package属性
+
+```xml
+		<!--第一种方式，指定多个mapper文件-->
+        <mapper resource="mapper/SongMapper.xml"/>
+        <!--第二种方式，使用包名   xml文件所在的包名 这个包中所有xml文件一次都能加再给mybatis
+            使用package要求：
+            1、mapper文件名称需要和接口名称一样，区分大小写一样
+            2、mapper文件和dao接口需要在统一目录
+        -->
+        <package name="mapper"/>
+```
+
+
+
+
+
+## 第六章
+
+#### 1.PageHelper分页插件
+
+* 中文文档：https://pagehelper.github.io/docs/
+
+#### 2.使用pagehelper插件
+
+1. 引入maven依赖
+
+   ```xml
+   <!--pageHelper-->
+           <dependency>
+               <groupId>com.github.pagehelper</groupId>
+               <artifactId>pagehelper</artifactId>
+               <version>5.1.10</version>
+           </dependency>
+   ```
+
+2. 在mybatis主配置文件中，增加配置信息
+
+   ```xml
+   <!--分页插件-->
+       <plugins>
+           <plugin interceptor="com.github.pagehelper.PageInterceptor"/>
+       </plugins>
+   ```
+
+3. 使用pagehelper
+
+   ```xml
+   <!--使用分页插件-->
+       <select id="selectAll" resultType="Song">
+           select * from mybatis_song
+       </select>
+   ```
+
+   ```java
+   @Test
+       public void selectAll() {
+           List<Song> list = new ArrayList<Song>();
+           list.add(new Song(1,"彩虹"));
+           list.add(new Song(2,"曾静的你"));
+           SqlSession sqlSession = MybatisUtil.getSqlSession();
+           SongDao mapper = sqlSession.getMapper(SongDao.class);
+           //加入PageHelper的方法，分页
+           //pageNum：第几页，从1开始
+           //pageSize：一页中有多少行数据
+           PageHelper.startPage(1,3);
+           //这样也行
+           PageHelper.offsetPage(1,3);
+           List<Song> songs = mapper.selectAll();
+           for (Song song : songs) {
+               System.out.println(song);
+           }
+           sqlSession.close();
+       }
+   ```
+
+   
